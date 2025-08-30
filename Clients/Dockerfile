@@ -1,17 +1,25 @@
-# Imagem base do .NET SDK para build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Etapa base: runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
+EXPOSE 8080
 
-# Copia csproj e restaura dependências
-COPY *.csproj .
+# Etapa de build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copiar csproj primeiro e restaurar dependências
+COPY *.csproj ./
 RUN dotnet restore
 
-# Copia todo o código e faz build
-COPY . .
-RUN dotnet publish -c Release -o out
+# Copiar todos os arquivos do projeto
+COPY . ./
 
-# Runtime mais leve para rodar a aplicação
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Publicar em release para a pasta /app
+RUN dotnet publish -c Release -o /app
+
+# Etapa final: runtime
+FROM base AS final
 WORKDIR /app
-COPY --from=build /app/out .
-ENTRYPOINT ["dotnet", "clients.dll"]
+COPY --from=build /app ./
+
+ENTRYPOINT ["dotnet", "Clients.dll"]

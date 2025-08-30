@@ -1,6 +1,8 @@
 services:
   clients:
-    build: ./src/Clients
+    build:
+      context: ./Clients
+      dockerfile: Dockerfile
     container_name: clients_api
     ports:
       - "5000:8080"
@@ -21,7 +23,7 @@ services:
       - "5433:5432"
     volumes:
       - clients_data:/var/lib/postgresql/data
-      - ./src/Clients/db/init:/docker-entrypoint-initdb.d
+      - ./Clients/db/init:/docker-entrypoint-initdb.d
 
 volumes:
   clients_data:
