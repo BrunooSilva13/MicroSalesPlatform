@@ -14,7 +14,22 @@ builder.Services.AddSingleton<ClientService>();
 
 builder.Services.AddControllers();
 
+// ⚡ Adicionando Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+// ⚡ Configurando Swagger
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clients API V1");
+        c.RoutePrefix = string.Empty; // Swagger na raiz http://localhost:5000/
+    });
+}
 
 app.MapControllers();
 

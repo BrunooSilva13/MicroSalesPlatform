@@ -10,6 +10,7 @@ services:
       - clients_db
     environment:
       - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development   # <--- ADICIONE ESTA LINHA
       - ConnectionStrings__DefaultConnection=Host=clients_db;Database=clientsdb;Username=admin;Password=root
 
   clients_db:
