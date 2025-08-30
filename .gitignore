@@ -1,0 +1,28 @@
+# Build e binários
+bin/
+obj/
+out/
+
+# Configurações locais do usuário
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Configurações do VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Docker
+*.pid
+.env
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
