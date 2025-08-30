@@ -1,0 +1,27 @@
+services:
+  clients:
+    build: ./src/Clients
+    container_name: clients_api
+    ports:
+      - "5000:8080"
+    depends_on:
+      - clients_db
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=clients_db;Database=clientsdb;Username=admin;Password=root
+
+  clients_db:
+    image: postgres:16
+    container_name: clients_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: clientsdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - clients_data:/var/lib/postgresql/data
+      - ./src/Clients/db/init:/docker-entrypoint-initdb.d
+
+volumes:
+  clients_data:

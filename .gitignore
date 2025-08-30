@@ -1,13 +1,25 @@
+# ======================================
+# .NET / C# Ignore
+# ======================================
+
 # Build e binários
 bin/
 obj/
 out/
+publish/
 
-# Configurações locais do usuário
+# Pacotes NuGet locais
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Arquivos de usuário do Visual Studio / Rider
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
+.idea/
 
 # Configurações do VS Code
 .vscode/
@@ -19,10 +31,14 @@ out/
 *.tmp
 *.temp
 
-# Docker
+# ======================================
+# Docker Ignore
+# ======================================
 *.pid
 .env
 
+# ======================================
 # Sistema operacional
+# ======================================
 .DS_Store
 Thumbs.db
