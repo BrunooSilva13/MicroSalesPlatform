@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace Clients.Services
 {
-    // Camada de lógica de negócio
     public class ClientService
     {
         private readonly ClientRepository _repository;
@@ -19,18 +18,30 @@ namespace Clients.Services
             return _repository.GetAll();
         }
 
-        public Client GetClientById(int id)
+        public Client? GetClientById(string id)
         {
             return _repository.GetById(id);
         }
 
-        public void AddClient(Client client)
+        public string AddClient(Client client)
         {
-            // Aqui você pode colocar validações
-            if (string.IsNullOrEmpty(client.Name))
+            if (string.IsNullOrWhiteSpace(client.Name))
                 throw new System.Exception("Nome do cliente é obrigatório");
 
-            _repository.Add(client);
+            if (_repository.GetByEmail(client.Email) != null)
+                throw new System.Exception("Email já cadastrado");
+
+            return _repository.Add(client); // agora retorna o id
+        }
+
+        public bool UpdateClient(string id, Client client)
+        {
+            return _repository.Update(id, client);
+        }
+
+        public bool InactivateClient(string id)
+        {
+            return _repository.Inactivate(id);
         }
     }
 }
