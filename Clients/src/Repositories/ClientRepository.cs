@@ -1,5 +1,6 @@
 using Clients.Models;
 using Npgsql;
+using System;
 using System.Collections.Generic;
 
 namespace Clients.Repositories
@@ -13,6 +14,7 @@ namespace Clients.Repositories
             _connectionString = connectionString;
         }
 
+        // Recupera todos os clientes ativos
         public List<Client> GetAll()
         {
             var clients = new List<Client>();
@@ -31,7 +33,7 @@ namespace Clients.Repositories
             {
                 clients.Add(new Client
                 {
-                    Id = reader.GetString(0),
+                    Id = reader.GetGuid(0).ToString(),  // UUID tratado corretamente
                     Name = reader.GetString(1),
                     Surname = reader.GetString(2),
                     Email = reader.GetString(3),
@@ -45,6 +47,7 @@ namespace Clients.Repositories
             return clients;
         }
 
+        // Recupera um cliente pelo ID
         public Client? GetById(string id)
         {
             using var connection = new NpgsqlConnection(_connectionString);
@@ -54,14 +57,15 @@ namespace Clients.Repositories
                 SELECT id, name, surname, email, birthdate, is_active, created_at, updated_at
                 FROM clients
                 WHERE id = @id", connection);
-            command.Parameters.AddWithValue("id", id);
+
+            command.Parameters.AddWithValue("id", Guid.Parse(id)); // Converte string para UUID
 
             using var reader = command.ExecuteReader();
             if (reader.Read())
             {
                 return new Client
                 {
-                    Id = reader.GetString(0),
+                    Id = reader.GetGuid(0).ToString(),
                     Name = reader.GetString(1),
                     Surname = reader.GetString(2),
                     Email = reader.GetString(3),
@@ -75,6 +79,7 @@ namespace Clients.Repositories
             return null;
         }
 
+        // Recupera um cliente pelo email
         public Client? GetByEmail(string email)
         {
             using var connection = new NpgsqlConnection(_connectionString);
@@ -84,6 +89,7 @@ namespace Clients.Repositories
                 SELECT id, name, surname, email, birthdate, is_active, created_at, updated_at
                 FROM clients
                 WHERE email = @email", connection);
+
             command.Parameters.AddWithValue("email", email);
 
             using var reader = command.ExecuteReader();
@@ -91,7 +97,7 @@ namespace Clients.Repositories
             {
                 return new Client
                 {
-                    Id = reader.GetString(0),
+                    Id = reader.GetGuid(0).ToString(),
                     Name = reader.GetString(1),
                     Surname = reader.GetString(2),
                     Email = reader.GetString(3),
@@ -105,12 +111,13 @@ namespace Clients.Repositories
             return null;
         }
 
+        // Adiciona um cliente
         public string Add(Client client)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
-            var id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid(); // UUID como Guid
 
             using var command = new NpgsqlCommand(@"
                 INSERT INTO clients (id, name, surname, email, birthdate, is_active, created_at, updated_at)
@@ -123,10 +130,12 @@ namespace Clients.Repositories
             command.Parameters.AddWithValue("birthdate", client.Birthdate.ToDateTime(TimeOnly.MinValue));
 
             command.ExecuteNonQuery();
-            client.Id = id;
-            return id;
+
+            client.Id = id.ToString();
+            return client.Id;
         }
 
+        // Atualiza um cliente existente
         public bool Update(string id, Client client)
         {
             using var connection = new NpgsqlConnection(_connectionString);
@@ -141,7 +150,7 @@ namespace Clients.Repositories
                     updated_at = NOW()
                 WHERE id = @id", connection);
 
-            command.Parameters.AddWithValue("id", id);
+            command.Parameters.AddWithValue("id", Guid.Parse(id)); // Converte string para UUID
             command.Parameters.AddWithValue("name", client.Name);
             command.Parameters.AddWithValue("surname", client.Surname);
             command.Parameters.AddWithValue("email", client.Email);
@@ -150,6 +159,7 @@ namespace Clients.Repositories
             return command.ExecuteNonQuery() > 0;
         }
 
+        // Inativa um cliente (delete lógico)
         public bool Inactivate(string id)
         {
             using var connection = new NpgsqlConnection(_connectionString);
@@ -161,7 +171,7 @@ namespace Clients.Repositories
                     updated_at = NOW()
                 WHERE id = @id", connection);
 
-            command.Parameters.AddWithValue("id", id);
+            command.Parameters.AddWithValue("id", Guid.Parse(id)); // Converte string para UUID
             return command.ExecuteNonQuery() > 0;
         }
     }
