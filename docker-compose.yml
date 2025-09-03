@@ -1,7 +1,7 @@
 services:
   clients:
     build:
-      context: ./Clients
+      context: ./src/clients
       dockerfile: Dockerfile
     container_name: clients_api
     ports:
@@ -10,7 +10,7 @@ services:
       - clients_db
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - ASPNETCORE_ENVIRONMENT=Development   # <--- ADICIONE ESTA LINHA
+      - ASPNETCORE_ENVIRONMENT=Development   # Ambiente de desenvolvimento
       - ConnectionStrings__DefaultConnection=Host=clients_db;Database=clientsdb;Username=admin;Password=root
 
   clients_db:
@@ -24,7 +24,7 @@ services:
       - "5433:5432"
     volumes:
       - clients_data:/var/lib/postgresql/data
-      - ./Clients/db/init:/docker-entrypoint-initdb.d
+      - ./src/clients/db/init:/docker-entrypoint-initdb.d
 
 volumes:
   clients_data:
